@@ -132,34 +132,8 @@ app.get("/login", function(req,res){
         console.log(error);
       });
 
-      //if email found
-          //if password matches
-              //set req.session.userId to that user
-          //else
-              //try again message..
-      //else 
-      // db.User.create(req.body)
-      // .then(function(dbUser) {
-      //   if(!req.session.userId){
-      //     req.session.userId = dbUser.id;
-          
-      //   }
-      //   // res.json(dbUser);
-      //   res.render("home", {user: dbUser})
-      // }).catch(function(error){
-      //   res.json(error.toString());
-      // });
+      
   });
-console.log("******************");
-console.log("******************");
-console.log("******************");
-console.log("******************");
-console.log("******************");
-console.log("******************");
-console.log("******************");
-console.log("******************");
-console.log(curr);
-console.log("******************");
   app.delete("/api/users/:id", function(req, res){
       db.User.destroy({
         where: {

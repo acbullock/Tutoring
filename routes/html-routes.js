@@ -1,4 +1,5 @@
 var express = require("express");
+var session = require('express-session');
 
 var app = express();
 
@@ -9,7 +10,8 @@ console.log("req");
 
 module.exports = function(app){
 var path = require("path");
-var currentUser;
+app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 }}))
+ 
 
 // Create all our routes and set up logic within those routes where required.
 app.get("/users/:id", function(req, res) {
@@ -17,9 +19,7 @@ app.get("/users/:id", function(req, res) {
     where:{
       id:req.params.id
     }
-  }).then(function(loggedInUser){
-    currentUser = loggedInUser;
-    console.log("\n\n\n\n"+currentUser.displayName);
+  }).then(function(currentUser){
     res.render("home", {user: currentUser});
   }).catch(function(error){
     console.log(error);
@@ -27,6 +27,7 @@ app.get("/users/:id", function(req, res) {
   
   
 });
+
 
 app.get("/lessons", function(req, res){
   db.Lesson.findAll({order:[["subject", "ASC"],["topic", "ASC"]]}).then(function(lessons){
@@ -51,7 +52,9 @@ app.get("/lessons/:id", function(req, res){
     console.log(error);
   });
 });
-
+app.get("/signup", function(req,res){
+  res.render("signup", {});
+});
 
 app.get("/quizzes", function(req, res){
   db.Quiz.findAll({
@@ -90,9 +93,30 @@ app.get("/quizzes/:id", function(req, res){
 });
 
 
-app.get("/home", function(req, res){
-  console.log("asdf"+currentUser);
-    res.render("home", {user: currentUser});
+
+app.get("/", function(req,res){
+  if(!isNaN(req.session.id))
+    res.redirect("/users/"+req.session.id);
+  else
+  {
+    res.redirect("/login");
+  }
+});
+
+app.get("/users/:id/history", function(req, res){
+  var userProbs;
+  var quizzes;
+  db.UserProblem.findAll({
+    where:{
+      UserId:req.params.id
+    },
+    order:[["createdAt", "DESC"]]
+  }).then(function(userProblems){
+
+    res.render("history", {problems:userProblems});
+
+  });
+
 });
 ///submitting a Quiz!!!!!
 

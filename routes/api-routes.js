@@ -7,12 +7,21 @@
 
 // Requiring our Todo model
 var db = require("../models");
-
+// var express = require("express");
+// var session = require('express-session');
+// var app = express();
+// app.use(session({
+//   secret: 'keyboard cat',
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: { }//secure: true 
+// }));
 // Routes
 // =============================================================
 module.exports = function(app) {
+var curr;
 app.get("/login", function(req,res){
-
+    curr=0;
     res.render("index");
   });
   // GET route for getting all of the users
@@ -22,6 +31,24 @@ app.get("/login", function(req,res){
       // console.log(dbUsers);
       res.json(dbUsers);
     }).catch();
+  });
+  app.post("/api/users", function(req, res){
+    db.User.findOne({
+      where:{
+        email:req.body.email
+      }
+    }).then(function(u){
+      if(u){
+        res.redirect("/login");
+      }
+      else{
+        db.User.create(req.body).then(function(user){
+      curr = user.id;
+      res.redirect("/home");
+    });
+      }
+    });
+    
   });
 
   // Get rotue for retrieving a single user
@@ -40,15 +67,65 @@ app.get("/login", function(req,res){
       );
     });
   });
+  app.get("/home", function(req, res){
+    if(curr>0){
+      res.redirect("/users/"+curr);
+    }
+    else{
+      res.redirect("/login");
+    }
+  });
+  app.post("/quizzes/:id/submit", function(req, res){
+    var keys = Object.keys(req.body);
+    var answers=req.body;
+    var numCorrect=0;
+    var Problem;
+    scorecursion(keys, answers, 0, 0);
+      res.redirect("/home");
+    
+    // for(var i= 0; i < keys.length; i++){
+
+    //   db.Problem.findOne({
+    //     where:{
+    //       id: parseInt(keys[i])
+    //     }
+    //   }).then(function(prob){
+    //     var correct=false;
+        
+    //     if(answers[prob.id] == prob.correctAnswer){
+    //       correct=true;
+    //       numCorrect++;
+          
+    //     }
+    //     db.UserProblem.create({
+    //        correct:correct,
+    //        QuizId: prob.QuizId,
+    //        UserId:curr
+    //     });
+
+    //   });
+
+
+      
+    // }
+    // console.log(numCorrect);
+    
+  });
   //should prob be in html-routes..
-    app.post("/api/users", function(req, res) {
+    app.post("/home", function(req, res) {
+
     // console.log("you made it");
       var user = req.body;
+      
       var dbUser = db.User.findOne({
         where: {email: user.email, password: user.password}
       }).then(function(dbUser){
         if(dbUser){
+          curr=dbUser.id;
           res.render("home", {user: dbUser});
+        }
+        else{
+          res.render("index");
         }
         
       }).catch(function(error){
@@ -73,7 +150,16 @@ app.get("/login", function(req,res){
       //   res.json(error.toString());
       // });
   });
-
+console.log("******************");
+console.log("******************");
+console.log("******************");
+console.log("******************");
+console.log("******************");
+console.log("******************");
+console.log("******************");
+console.log("******************");
+console.log(curr);
+console.log("******************");
   app.delete("/api/users/:id", function(req, res){
       db.User.destroy({
         where: {
@@ -254,9 +340,47 @@ app.post("/quizzes/:quizId/", function(req, res){
   }).catch(function(error){
     res.json(error.toString());
   });
-})
+});
+
+var scorecursion = function(keys, answers, i, numCorrect){
+  console.log(keys);
+  console.log(answers);
+  console.log(i);
+  console.log(numCorrect);
+  if(i == keys.length){
+
+    var score= numCorrect*100/keys.length;
+    console.log("score:" + score);
+
+    return score;
+  }
+  else{
+    db.Problem.findOne({
+        where:{
+          id: parseInt(keys[i])
+        }
+      }).then(function(prob){
+        var correct=false;
+        
+        if(answers[prob.id] == prob.correctAnswer){
+          correct=true;
+          numCorrect++;
+          
+        }
+        db.UserProblem.create({
+           correct:correct,
+           QuizId: prob.QuizId,
+           UserId:curr,
+           ProblemId:prob.id,
+           question:prob.question,
+           correctAnswer:prob.correctAnswer
+        });
 
 
+        scorecursion(keys, answers, i+1, numCorrect)
+      });
+  }
+}
 };
 
 

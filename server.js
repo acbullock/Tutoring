@@ -8,17 +8,19 @@ var db = require("./models");
 var PORT = process.env.PORT || 3000;
 var app = express();
 
-var sess = {
-  secret: 'math',
-  cookie: {}
-}
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { }//secure: true 
+}));
  
-if (app.get('env') === 'production') {
+/*if (app.get('env') === 'production') {
   app.set('trust proxy', 1); // trust first proxy
   sess.cookie.secure = true; // serve secure cookies
-}
+}*/
  
-app.use(session(sess));
+// app.use(session(sess));
 
 // Sets up the Express app to handle data parsing
 app.use(bodyParser.json());
@@ -47,10 +49,13 @@ require("./routes/html-routes.js")(app);
 db.sequelize.sync({force:true}).then(function(){
 
 	db.User.create({
+
 		email:"user1@email.com",
 		password:"password123",
 		displayName:"John Smith 1"
-	}).then().catch();
+	}).then(function(user){
+
+	}).catch();
 	db.User.create({
 		email:"user2@email.com",
 		password:"password123",
@@ -62,15 +67,15 @@ db.sequelize.sync({force:true}).then(function(){
 		displayName:"John Smith 3"
 	}).then().catch();
 	db.Lesson.create({
-			subject:"Calculus",
-			topic:"Integrals",
-			content:"blahblahblah"
+			subject:"Algebra",
+			topic:"Exponents",
+			content:"/assets/img/exponentlesson1.png"
 		}
 		).then(function(l){
 			db.Quiz.create(
 				{
-					subject: "Calculus",
-					topic:"Integrals Quiz 1",
+					subject: l.subject,
+					topic:l.topic,
 					LessonId: l.id
 					// lessons:[l]
 				},
@@ -86,15 +91,33 @@ db.sequelize.sync({force:true}).then(function(){
 				},{include: [db.Quiz]});
 				db.Problem.create({
 					question:"/assets/img/exponent2.png",
-					choices:"A. 9\nB. 27\nC. 6\nD.18",
+					choices:"A. 9 B. 27 C. 6 D.18",
+					correctAnswer:"B",
+					QuizId: q.id
+				},{include: [db.Quiz]});
+				db.Problem.create({
+					question:"/assets/img/exponent3.png",
+					choices:"A. -1\nB. 0\nC. 1\nD.80",
+					correctAnswer:"C",
+					QuizId: q.id
+				},{include: [db.Quiz]});
+				db.Problem.create({
+					question:"/assets/img/exponent4.png",
+					choices:"A. undefined\nB. 100\nC. 1000\nD.0",
+					correctAnswer:"B",
+					QuizId: q.id
+				},{include: [db.Quiz]});
+				db.Problem.create({
+					question:"/assets/img/exponent5.png",
+					choices:"A. 9\nB. -64\nC. 6\nD.18",
 					correctAnswer:"B",
 					QuizId: q.id
 				},{include: [db.Quiz]});
 			}).catch();
 			db.Quiz.create(
 				{
-					subject: "Calculus",
-					topic:"Integrals Quiz 2",
+					subject: l.subject,
+					topic: l.topic,
 					LessonId: l.id
 					// lessons:[l]
 				},
@@ -104,70 +127,39 @@ db.sequelize.sync({force:true}).then(function(){
 			).then(function(q){
 
 				db.Problem.create({
-					question:"1. Calculus Integrals",
-					choices:"A. blah\nB. blah\nC. blah\nD.blah",
+					question:"/assets/img/exponent6.png",
+					choices:"A. -4096\nB. 4096\nC. 32\nD.64",
 					correctAnswer:"B",
 					QuizId: q.id
 				},{include: [db.Quiz]});
 
 				db.Problem.create({
-					question:"2. Calculus Integrals",
-					choices:"A. blah\nB. blah\nC. blah\nD.blah",
+					question:"/assets/img/exponent7.png",
+					choices:"A. -9\nB. 9\nC. -1/9\nD.1/9",
 					correctAnswer:"C",
 					QuizId: q.id
 				},{include: [db.Quiz]});
 				db.Problem.create({
-					question:"3. Calculus Integrals",
-					choices:"A. blah\nB. blah\nC. blah\nD.blah",
+					question:"/assets/img/exponent8.png",
+					choices:"A. -5\nB. 1\nC. 5\nD.0",
 					correctAnswer:"B",
 					QuizId: q.id
 				},{include: [db.Quiz]});
 
 				db.Problem.create({
-					question:"4. Calculus Integrals",
-					choices:"A. blah\nB. blah\nC. blah\nD.blah",
-					correctAnswer:"C",
+					question:"/assets/img/exponent9.png",
+					choices:"A. 343\nB. 49\nC. 21\nD.73",
+					correctAnswer:"A",
 					QuizId: q.id
 				},{include: [db.Quiz]});
 				db.Problem.create({
-					question:"5. Calculus Integrals",
-					choices:"A. blah\nB. blah\nC. blah\nD.blah",
+					question:"/assets/img/exponent10.png",
+					choices:"A. 216\nB. -216\nC. undefined\nD.36",
 					correctAnswer:"B",
 					QuizId: q.id
 				},{include: [db.Quiz]});
 
-				db.Problem.create({
-					question:"6. Calculus Integrals",
-					choices:"A. blah\nB. blah\nC. blah\nD.blah",
-					correctAnswer:"C",
-					QuizId: q.id
-				},{include: [db.Quiz]});
-				db.Problem.create({
-					question:"7. Calculus Integrals",
-					choices:"A. blah\nB. blah\nC. blah\nD.blah",
-					correctAnswer:"B",
-					QuizId: q.id
-				},{include: [db.Quiz]});
-
-				db.Problem.create({
-					question:"8. Calculus Integrals",
-					choices:"A. blah\nB. blah\nC. blah\nD.blah",
-					correctAnswer:"C",
-					QuizId: q.id
-				},{include: [db.Quiz]});
-				db.Problem.create({
-					question:"9. Calculus Integrals",
-					choices:"A. blah\nB. blah\nC. blah\nD.blah",
-					correctAnswer:"B",
-					QuizId: q.id
-				},{include: [db.Quiz]});
-
-				db.Problem.create({
-					question:"10. Calculus Integrals",
-					choices:"A. blah\nB. blah\nC. blah\nD.blah",
-					correctAnswer:"C",
-					QuizId: q.id
-				},{include: [db.Quiz]});
+				
 			});
 
 			
@@ -181,20 +173,39 @@ db.sequelize.sync({force:true}).then(function(){
 	db.Lesson.create({
 			subject:"Algebra 1",
 			topic:"Parabolas",
-			content:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+			content:"/assets/img/parabolaslesson1.png"
 		}
 		).then(function(l){
 			db.Quiz.create(
 				{
-					subject: "Algebra 1 - Parabolas",
-					topic:"Parabolas Quiz 1",
+					subject: l.subject,
+					topic:l.topic,
 					LessonId: l.id
 					// lessons:[l]
 				},
 				{
 					include: [db.Lesson]
 				}
-			);
+			).then(function(q){
+				db.Problem.create({
+					question:"/assets/img/parabolas1.png",
+					choices:"A. (0,0); maximum\nB. (0,0); minimum\nC. (1,0); minimum\nD. (1,0); maximum",
+					correctAnswer:"A",
+					QuizId: q.id
+				},{include: [db.Quiz]});
+				db.Problem.create({
+					question:"/assets/img/parabolas2.png",
+					choices:"A. width = 14 ft; area = 196 ft^2\nB. width = 14 ft; area = 588 ft2\nC. width = 28 ft; area = 420 ft2\nD. width = 28 ft; area = 196 ft2",
+					correctAnswer:"A",
+					QuizId: q.id
+				},{include: [db.Quiz]});
+				db.Problem.create({
+					question:"/assets/img/parabolas3.png",
+					choices:"A. 1.25 s; 85 ft\nB. 1.25 s; 40 ft\nC. 1.25 s; 35 ft\nD. 2.5 s; 10 ft",
+					correctAnswer:"A",
+					QuizId: q.id
+				},{include: [db.Quiz]});
+			});
 			db.Quiz.create(
 				{
 					subject: "Algebra 1 - Parabolas",

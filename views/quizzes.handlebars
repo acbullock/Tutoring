@@ -9,16 +9,18 @@
 
 
 
-<div class="container">
+<div class="banner-sign container">
   <div class="row">
     <div class="col-md-12">
+    <br>
       <ul>
         {{#each quizzes}}
-            <li >
-            <a href="/quizzes/{{this.id}}">		 
+            <li>
+            <a class="btn btn-warning"href="/quizzes/{{this.id}}">		 
             {{this.subject}}
             {{this.topic}}</a>
             </li>   
+            <br>
         {{/each}}
       </ul>
     </div>

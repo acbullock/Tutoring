@@ -206,23 +206,52 @@ db.sequelize.sync({force:true}).then(function(){
 					QuizId: q.id
 				},{include: [db.Quiz]});
 			});
-			db.Quiz.create(
-				{
-					subject: "Algebra 1 - Parabolas",
-					topic:"Parabolas Quiz 2",
-					LessonId: l.id
-					// lessons:[l]
-				},
-				{
-					include: [db.Lesson]
-				}
-			);
+			
 
 
 			
 	});
 
+	db.Lesson.create({
+		subject: "Algebra 1",
+		topic: "Roots",
+		content: "/assets/img/rootslesson1.png"
+	}).then(function(l){
+		db.Quiz.create({
+			subject: l.subject,
+			topic: l.topic,
+			LessonId:l.id
+		},
+		{
+			include: [db.Lesson]
+		}).then(function(q){
+			db.Problem.create({
+				question: "/assets/img/roots3.png",
+				choices:"A.  49  B. 7  C. undefined D. 64",
+				correctAnswer: "B",
+				QuizId: q.id
+			},{include: [db.Quiz]});
+			db.Problem.create({
+				question: "/assets/img/roots4.png",
+				choices:"A.  49  B. 7  C. 5 D. 64",
+				correctAnswer: "C",
+				QuizId: q.id
+			},{include: [db.Quiz]});
+			db.Problem.create({
+				question: "/assets/img/roots5.png",
+				choices:"A.  3  B. 7  C. undefined D. 64",
+				correctAnswer: "A",
+				QuizId: q.id
+			},{include: [db.Quiz]});
+			db.Problem.create({
+				question: "/assets/img/roots6.png",
+				choices:"A.  49  B. 7  C. undefined D. 11",
+				correctAnswer: "D",
+				QuizId: q.id
+			},{include: [db.Quiz]});
 
+		});
+	});
 	
 
 	// Do your seeding here.....

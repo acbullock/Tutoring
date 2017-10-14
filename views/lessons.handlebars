@@ -15,10 +15,12 @@
       <ul>
         {{#each lessons}}
             <li >
-            <a href="/lessons/{{this.id}}">		 
+            <a class="btn btn-default" href="/lessons/{{this.id}}">		 
             {{this.subject}}
             {{this.topic}}</a>
-            </li>   
+
+            </li>
+            <br>   
         {{/each}}
       </ul>
     </div>

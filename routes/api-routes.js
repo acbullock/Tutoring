@@ -341,6 +341,7 @@ var scorecursion = function(keys, answers, i, numCorrect){
           numCorrect++;
           
         }
+        if(curr>0){
         db.UserProblem.create({
            correct:correct,
            QuizId: prob.QuizId,
@@ -349,7 +350,7 @@ var scorecursion = function(keys, answers, i, numCorrect){
            question:prob.question,
            correctAnswer:prob.correctAnswer
         });
-
+}
 
         scorecursion(keys, answers, i+1, numCorrect)
       });
